@@ -1,6 +1,7 @@
 package com.chat_bot.ValeraBot.config;
 
 import com.chat_bot.ValeraBot.service.TelegramBot;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -21,7 +22,7 @@ public class BotInitializer {
             telegramBotsApi.registerBot(telegramBot);
         }
         catch (TelegramApiException e) {
-
+            System.out.println(e.getMessage());
         }
     }
 }
