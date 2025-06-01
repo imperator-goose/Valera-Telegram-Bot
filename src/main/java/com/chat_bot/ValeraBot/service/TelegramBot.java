@@ -1,11 +1,14 @@
 package com.chat_bot.ValeraBot.service;
 
 import com.chat_bot.ValeraBot.config.BotConfig;
+import com.chat_bot.ValeraBot.model.Ads;
+import com.chat_bot.ValeraBot.model.AdsRepository;
 import com.chat_bot.ValeraBot.model.User;
 import com.chat_bot.ValeraBot.model.UserRepository;
 import com.vdurmont.emoji.EmojiParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
@@ -29,7 +32,8 @@ import java.util.List;
 public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    private AdsRepository adsRepository;
     final BotConfig config;
 
     static final String HELP_TEXT = "This bot is created to demonstrate Spring capabilities.\n\n" +
@@ -204,6 +208,17 @@ public class TelegramBot extends TelegramLongPollingBot {
             execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
+        }
+    }
+    @Scheduled(cron = "0 * * * * *")
+    private void sendAd(){
+        List<User> users = userRepository.findAll();
+        List<Ads> ads = adsRepository.findAll();
+
+        for(Ads ad : ads){
+            for(User user : users){
+                sendMessage(user.getChatId(), ad.getAd());
+            }
         }
     }
 
